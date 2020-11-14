@@ -4,16 +4,19 @@ from django.shortcuts import render
 from django.views import View
 
 from cyber_security.util.dataTools import Data
-from question.models import Question
+from cyber_security.util.httpTools import RestResponse
+from cyber_security.util.viewsTools import NewView
+from question.forms import QuestionForm
+from question.models import Question, Option
 
 
-class TestView(View):
+class QuestionView(NewView):
     def get(self, request):
-        print('+++')
-        try:
-            s = Data.getData(Question, 1)
-        except Exception as e:
-            print(e)
-        print(s)
-        # Data.createData(Question, None)
-        print("...")
+        self.userAuth()
+        form = QuestionForm(self.GET())
+        if not form.is_valid():
+            return RestResponse.frontFail("参数错误！", form.errorsDict())
+        dataList = Question.objects.filter(type=form.cleaned_data['type']).values("questionId").order_by('?')[:10]
+        for data in dataList:
+            print(data['questionId'])
+        return RestResponse.success("获取题目成功！", {})

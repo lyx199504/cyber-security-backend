@@ -10,10 +10,9 @@ from django.db import models
 class Question(models.Model):
     questionId = models.AutoField(db_column='question_id', primary_key=True)
     content = models.TextField(db_column='content')
-    type = models.IntegerField(db_column='type')
-    isCorrect = models.IntegerField(db_column='is_correct')
-    createTime = models.DateTimeField(db_column='create_time')
-    updateTime = models.DateTimeField(db_column='update_time')
+    type = models.IntegerField(db_column='type', default=0)
+    isCorrect = models.IntegerField(db_column='is_correct', default=0)
+    createTime = models.DateTimeField(db_column='create_time', auto_now=True)
 
     class Meta:
         managed = False
@@ -29,13 +28,8 @@ class Option(models.Model):
     optionId = models.AutoField(db_column='option_id', primary_key=True)
     questionId = models.IntegerField(db_column='question_id')
     content = models.TextField(db_column='content')
-    isCorrect = models.IntegerField(db_column='is_correct')
-    createTime = models.DateTimeField(db_column='create_time')
-    updateTime = models.DateTimeField(db_column='update_time')
+    isCorrect = models.IntegerField(db_column='is_correct', default=0)
 
     class Meta:
         managed = False
         db_table = 'option'
-        # unique_together = (('option_id', 'question_id'),)
-
-

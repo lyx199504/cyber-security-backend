@@ -16,16 +16,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from question.views import TestView
+from question.views import QuestionView
 from user.views import UserLoginView, UserSelfView, UserCheckinView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    # 接口
+    # 用户接口
     path('user/login', UserLoginView.as_view()),
     path('user/self', UserSelfView.as_view()),
     path('user/checkin', UserCheckinView.as_view()),
 
-    path('test', TestView.as_view()),
+    # 答题接口
+    path('question', QuestionView.as_view()),
 ]
