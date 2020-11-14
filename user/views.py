@@ -20,9 +20,8 @@ class UserLoginView(NewView):
         data = form.cleaned_data
         openId = wechatAuth.requestWechat(data["code"])
         if not openId:
-            return RestResponse.userFail("授权失败！")
+            return RestResponse.userFail("授权失败！", {"openId": openId})
         data['openId'] = openId
-        data['unionId'] = openId
         data['loginTime'] = datetime.datetime.now()
         del data['code']
         user = User.objects.filter(openId=openId).values('userId').first()

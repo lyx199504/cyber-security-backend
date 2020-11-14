@@ -6,7 +6,6 @@ from django.db import models
 class User(models.Model):
     userId = models.AutoField(db_column='user_id', primary_key=True)
     openId = models.CharField(db_column='open_id', max_length=100)
-    unionId = models.CharField(db_column='union_id', max_length=100)
     nickname = models.CharField(db_column='nickname', max_length=255)
     gender = models.IntegerField(db_column='gender', default=0)
     image = models.CharField(db_column='image', max_length=255)
