@@ -21,7 +21,7 @@ class RestResponse:
 
     @staticmethod
     def authFail():
-        return JsonResponse({'code': RestResponse.AUTH_ERROR, 'msg': '用户认证失败，请重新登录！', 'data': None})
+        return JsonResponse({'code': RestResponse.AUTH_ERROR, 'msg': '用户认证失败，请重新登录！', 'data': {}})
 
     @staticmethod
     def userFail(msg='', data={}):
@@ -33,4 +33,4 @@ class RestResponse:
 
     @staticmethod
     def serverFail():
-        return JsonResponse({'code': RestResponse.SERVER_ERROR, 'msg': '服务器出错！', 'data': None})
+        return JsonResponse({'code': RestResponse.SERVER_ERROR, 'msg': '服务器出错！', 'data': {}})

@@ -10,7 +10,8 @@ from cyber_security.util.viewsTools import NewView
 from user import wechatAuth
 
 from user.forms import UserLoginForm
-from user.models import User
+from user.models import User, Checkin
+
 
 # 用户登录
 class UserLoginView(NewView):
@@ -39,4 +40,18 @@ class UserSelfView(NewView):
     def get(self, request):
         self.userAuth()
         data = Data.getData(User, self.userId)
-        return RestResponse.success("获取自己的数据成功！", data)
+        return RestResponse.success("获取自己的信息成功！", data)
+
+# 用户签到
+class UserCheckinView(NewView):
+    def post(self, request):
+        self.userAuth()
+        checkinScore = 5  # 签到奖励积分
+        try:
+            Data.createData(Checkin, {"userId": self.userId})
+            data = Data.getData(User, self.userId)
+            user = {"userId": self.userId, "score": data['score'] + checkinScore}
+            Data.updateData(User, user)
+            return RestResponse.success("签到成功！", {"score": checkinScore})
+        except:
+            return RestResponse.userFail("你今天已签到，不能重复签到哟!")

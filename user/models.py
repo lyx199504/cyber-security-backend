@@ -22,3 +22,13 @@ class User(models.Model):
         fields = list(map(lambda field: field.name, User._meta.fields))
         fields.remove("openId")  # 过滤掉openId
         return fields
+
+class Checkin(models.Model):
+    checkinId = models.AutoField(db_column='checkin_id', primary_key=True)
+    userId = models.IntegerField(db_column='user_id')
+    createDate = models.DateField(db_column='create_date', auto_now=True)
+    createTime = models.DateTimeField(db_column='create_time', auto_now=True)
+
+    class Meta:
+        managed = False
+        db_table = 'checkin'

@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path
 
 from question.views import TestView
-from user.views import UserLoginView, UserSelfView
+from user.views import UserLoginView, UserSelfView, UserCheckinView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,5 +25,7 @@ urlpatterns = [
     # 接口
     path('user/login', UserLoginView.as_view()),
     path('user/self', UserSelfView.as_view()),
+    path('user/checkin', UserCheckinView.as_view()),
+
     path('test', TestView.as_view()),
 ]
