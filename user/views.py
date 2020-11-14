@@ -16,11 +16,11 @@ class UserLoginView(NewView):
     def post(self, request):
         form = UserLoginForm(self.getPost())
         if not form.is_valid():
-            return RestResponse.userFail("登录失败！", form.errorsDict())
+            return RestResponse.frontFail("登录失败！", form.errorsDict())
         data = form.cleaned_data
         openId = wechatAuth.requestWechat(data["code"])
         if not openId:
-            return RestResponse.userFail("授权失败！", {"openId": openId})
+            return RestResponse.userFail("登录失败！")
         data['openId'] = openId
         data['loginTime'] = datetime.datetime.now()
         del data['code']

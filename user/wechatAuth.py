@@ -29,7 +29,6 @@ def requestWechat(code):
     # 根据appid,secret和前端发送的code，获取openid
     url = "https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code" % (appid, secret, code)
     response = requestUrl(url)
-    print(response)
     openId = response.get('openid', "")
     return openId
 
