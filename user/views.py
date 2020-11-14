@@ -3,6 +3,7 @@ import datetime
 from django.shortcuts import render
 
 # Create your views here.
+from cyber_security.util.dataTools import Data
 from cyber_security.util.httpTools import RestResponse
 from cyber_security.util.tokenTools import Token
 from cyber_security.util.viewsTools import NewView
@@ -14,7 +15,7 @@ from user.models import User
 # 用户登录
 class UserLoginView(NewView):
     def post(self, request):
-        form = UserLoginForm(self.getPost())
+        form = UserLoginForm(self.POST())
         if not form.is_valid():
             return RestResponse.frontFail("登录失败！", form.errorsDict())
         data = form.cleaned_data
@@ -28,7 +29,14 @@ class UserLoginView(NewView):
         if user:
             userId = user['userId']
         else:
-            user = User.objects.create(**data)
+            user = Data.createData(User, data)
             userId = user.userId
         sn = Token.setSn(userId)
         return RestResponse.success("登录成功！", {"userId": userId, "sn": sn})
+
+# 用户信息
+class UserSelfView(NewView):
+    def get(self, request):
+        self.userAuth()
+        data = Data.getData(User, self.userId)
+        return RestResponse.success("获取自己的数据成功！", data)

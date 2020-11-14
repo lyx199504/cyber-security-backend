@@ -20,4 +20,5 @@ class User(models.Model):
     @staticmethod
     def allowFields():
         fields = list(map(lambda field: field.name, User._meta.fields))
+        fields.remove("openId")  # 过滤掉openId
         return fields

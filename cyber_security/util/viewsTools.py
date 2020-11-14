@@ -14,10 +14,13 @@ class NewView(View):
     def setHeaders(self):
         self.sn = self.request.META.get('HTTP_SN', "")
 
-    def getPost(self):
+    def GET(self):
+        return self.request.GET.dict()
+
+    def POST(self):
         return self.request.POST.dict()
 
-    def getPut(self):
+    def PUT(self):
         return MultiPartParser(self.request.META, self.request, self.request.upload_handlers).parse()[0].dict()
 
     # 用户认证

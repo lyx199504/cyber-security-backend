@@ -17,12 +17,13 @@ from django.contrib import admin
 from django.urls import path
 
 from question.views import TestView
-from user.views import UserLoginView
+from user.views import UserLoginView, UserSelfView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 
     # 接口
     path('user/login', UserLoginView.as_view()),
+    path('user/self', UserSelfView.as_view()),
     path('test', TestView.as_view()),
 ]

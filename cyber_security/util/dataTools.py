@@ -8,16 +8,17 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django_redis import get_redis_connection
 
 class RedisData:
+    prefix = "cyber_security"
     DATA_TIME = 60*60*24*30  # 30天
     redisConn = get_redis_connection()
 
     @staticmethod  # 数据库数据key
     def getDataKey(model, id):
-        return '/%s/%s' % (model, id)
+        return '/%s/%s/%s' % (RedisData.prefix, model, id)
 
     @staticmethod  # 用户sn key
     def getSnKey(userId):
-        return '/user/%s/sn' % userId
+        return '/%s/user/%s/sn' % (RedisData.prefix, userId)
 
     @staticmethod  # 在redis中获取单个数据
     def getData(key, loads=True):
@@ -71,7 +72,4 @@ class Data:
 
     @staticmethod
     def createData(model, data):
-        try:
-            return model.objects.create(**data)
-        except:
-            return False
+        return model.objects.create(**data)
