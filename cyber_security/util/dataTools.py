@@ -41,6 +41,33 @@ class RedisData:
         except:
             return False
 
+    @staticmethod  # 在redis中获取批量数据
+    def getDataList(keyList):
+        try:
+            redisConn = RedisData.redisConn.pipeline(transaction=False)
+            for key in keyList:
+                redisConn.get(key)
+            results = redisConn.execute()
+            return results
+        except:
+            return [None]*len(keyList)
+
+    @staticmethod  # 在redis中批量设置信息， keyValue键值对， time设置时间（单位：s）
+    def setDataList(keyValue, time=-1, dumps=True):
+        try:
+            redisConn = RedisData.redisConn.pipeline(transaction=False)
+            for key in keyValue:
+                if dumps:
+                    redisConn.set(key, json.dumps(keyValue[key], cls=DjangoJSONEncoder))
+                else:
+                    redisConn.set(key, keyValue[key])
+                if time > -1:
+                    redisConn.expire(key, time)
+            redisConn.execute()
+            return True
+        except:
+            return False
+
 
 class Data:
     @staticmethod  # 先在redis后在db中获取数据
@@ -73,3 +100,29 @@ class Data:
     @staticmethod
     def createData(model, data):
         return model.objects.create(**data)
+
+    @staticmethod  # 先在redis后在db中获取多个数据
+    def getDataList(model, idList):
+        modelName = model._meta.object_name
+        modelName = modelName[0].lower() + modelName[1:]
+        keyList = list(map(lambda x: RedisData.getDataKey(modelName, x), idList))
+        dataList = RedisData.getDataList(keyList)
+        # 判断redis中有没有数据
+        unsolvedIdIndex, unsolvedIdList = [], []
+        for i in range(len(idList)):
+            if dataList[i]:
+                dataList[i] = json.loads(dataList[i])
+            else:
+                unsolvedIdIndex.append(i)
+                unsolvedIdList.append(idList[i])
+        if unsolvedIdList:  # 若redis没有，则查询mysql
+            tableName = model._meta.db_table
+            conditionList = ['WHEN ' + tableName+'_id' + '=%s THEN %s' % (pk, index) for index, pk in enumerate(unsolvedIdList)]
+            ordering = "CASE %s END" % ' '.join(conditionList)  # 使得查表时不改变顺序
+            datas = list(model.objects.filter(**{modelName+'Id__in': unsolvedIdList}).values(*model.allowFields()).extra(select={'ordering': ordering}, order_by=('ordering',)))
+            keyList = list(map(lambda x: RedisData.getDataKey(modelName, x), unsolvedIdList))
+            keyValue = dict(zip(keyList, datas))
+            RedisData.setDataList(keyValue, RedisData.DATA_TIME)
+            for i in range(len(unsolvedIdList)):
+                dataList[unsolvedIdIndex[i]] = datas[i]
+        return dataList

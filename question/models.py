@@ -33,3 +33,9 @@ class Option(models.Model):
     class Meta:
         managed = False
         db_table = 'option'
+
+    @staticmethod
+    def allowFields():
+        fields = list(map(lambda field: field.name, Option._meta.fields))
+        fields.remove('isCorrect')
+        return fields

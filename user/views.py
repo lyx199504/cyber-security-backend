@@ -1,7 +1,5 @@
 import datetime
 
-from django.shortcuts import render
-
 # Create your views here.
 from cyber_security.util.dataTools import Data
 from cyber_security.util.httpTools import RestResponse
