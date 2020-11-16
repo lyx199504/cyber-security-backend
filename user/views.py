@@ -7,7 +7,7 @@ from cyber_security.util.tokenTools import Token
 from cyber_security.util.viewsTools import NewView
 from user import wechatAuth
 
-from user.forms import UserLoginForm
+from user.forms import UserLoginForm, UserRankForm
 from user.models import User, Checkin
 
 
@@ -26,7 +26,8 @@ class UserLoginView(NewView):
         del data['code']
         user = User.objects.filter(openId=openId).values('userId').first()
         if user:
-            userId = user['userId']
+            userId = data['userId'] = user['userId']
+            Data.updateData(User, data)
         else:
             user = Data.createData(User, data)
             userId = user.userId
@@ -53,3 +54,18 @@ class UserCheckinView(NewView):
             return RestResponse.success("签到成功！", {"score": checkinScore})
         except:
             return RestResponse.userFail("你今天已签到，不能重复签到哟!")
+
+# 排行榜
+class UserRankView(NewView):
+    def get(self, request):
+        self.userAuth()
+        form = UserRankForm(self.GET())
+        if not form.is_valid():
+            return RestResponse.frontFail("参数错误！", form.errorsDict())
+        data = form.cleaned_data
+        offset = data['offset'] if data['offset'] else 0
+        limit = data['limit'] if data['limit'] else 10
+        userList = User.objects.values('userId').order_by('-score')[offset: limit]
+        userIdList = list(map(lambda x: x['userId'], userList))
+        userList = Data.getDataList(User, userIdList)
+        return RestResponse.success("获取成功！", {"userList": userList})

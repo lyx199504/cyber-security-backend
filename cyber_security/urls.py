@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path, re_path
 
 from question.views import QuestionView, QuestionByIdView
-from user.views import UserLoginView, UserSelfView, UserCheckinView
+from user.views import UserLoginView, UserSelfView, UserCheckinView, UserRankView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,8 +26,10 @@ urlpatterns = [
     path('user/login', UserLoginView.as_view()),
     path('user/self', UserSelfView.as_view()),
     path('user/checkin', UserCheckinView.as_view()),
+    path('user/rank', UserRankView.as_view()),
 
     # 答题接口
     path('question', QuestionView.as_view()),
     re_path('question/(?P<questionId>\d+)', QuestionByIdView.as_view()),
+
 ]
