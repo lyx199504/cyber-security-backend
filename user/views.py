@@ -65,7 +65,7 @@ class UserRankView(NewView):
         data = form.cleaned_data
         offset = data['offset'] if data['offset'] else 0
         limit = data['limit'] if data['limit'] else 10
-        userList = User.objects.values('userId').order_by('-score')[offset: limit]
+        userList = User.objects.values('userId').order_by('-score')[offset: offset+limit]
         userIdList = list(map(lambda x: x['userId'], userList))
         userList = Data.getDataList(User, userIdList)
         return RestResponse.success("获取成功！", {"userList": userList})
